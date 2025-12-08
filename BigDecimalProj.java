@@ -7,8 +7,9 @@ public class BigDecimalProj {
     static String[] units = {"", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять", "десять",
             "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать",
             "восемнадцать", "девятнадцать"};
-    static String[] dozens = {"", "десять", "двадцать", "тридцать", "сорок", "пятьдесять", "шестдесять", "семьдесять",
-            "восемьдесять", "девяносто"};
+    static String[] units12 = {"", "одна", "две"};
+    static String[] dozens = {"", "десять", "двадцать", "тридцать", "сорок", "пятьдесят", "шестдесят", "семьдесят",
+            "восемьдесят", "девяносто"};
     static String[] hundreds = {"", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот",
             "восемьсот", "девятьсот"};
 
@@ -23,21 +24,25 @@ public class BigDecimalProj {
         short fractionalNumber = number.movePointRight(2).remainder(BigDecimal.valueOf(100)).shortValue();
         System.out.println("рублей: " + wholeNumber + "\n" + "копеек: " + fractionalNumber + "\n");
 
-        System.out.println(bigIntNum(wholeNumber) + rubles(wholeNumber) + numStr(fractionalNumber) + kopecks(fractionalNumber));;
+        System.out.println(bigIntNum(wholeNumber) + rubles(wholeNumber) + numStr(fractionalNumber, 1) + kopecks(fractionalNumber));;
     }
 
-    private static String numStr(int num){
+    private static String numStr(int num, int thousands){
         int t = num % 100;
         int hundred = num / 100;
         StringBuilder str = new StringBuilder();
 
         str.append(hundreds[hundred]).append(" ");
-
-        if (t > 9 && t < 20){
-            str.append(units[t]).append(" ");
+        if (thousands == 1 && (t%10 == 1 || t%10 == 2)){
+            str.append(dozens[t / 10]).append(" ");
+            str.append(units12[t % 10]).append(" ");
         } else {
-            str.append(dozens[t/10]).append(" ");
-            str.append(units[t % 10]).append(" ");
+            if (t > 9 && t < 20) {
+                str.append(units[t]).append(" ");
+            } else {
+                str.append(dozens[t / 10]).append(" ");
+                str.append(units[t % 10]).append(" ");
+            }
         }
 
         return str.toString().trim();
@@ -57,8 +62,8 @@ public class BigDecimalProj {
         for (int i = 0; num > 0; i++){
             n = (int) (num % 1000);
             num /= 1000;
-            strB.append(numStr(n)).append(" ");
-            if (n%10 == 0 || n%10 > 4){
+            strB.append(numStr(n, i)).append(" ");
+            if (n%10 == 0 || n%10 > 4 || (n%100 < 20 && n%100 > 9)){
                 strB.append(thousands_056789[i]).append(" ");
             } else if (n%10 != 1) {
                 strB.append(thousands_234[i]).append(" ");
@@ -73,7 +78,7 @@ public class BigDecimalProj {
     }
 
     private static String rubles(long num){
-        if (num%10 == 0 || num%10 > 4 || num%100 < 20){
+        if (num%10 == 0 || num%10 > 4 || (num%100 < 20 && num%100 > 9)){
             return " рублей ";
         } else if (num%10 != 1) {
             return " рубля ";
@@ -83,27 +88,16 @@ public class BigDecimalProj {
     }
 
     private static String kopecks(short num){
-        if (num%10 == 0 || num%10 > 4 || num%100 < 20){
-            return " копеек";
-        } else if (num%10 != 1) {
-            return " копейки";
+        if (num == 0) {
+            return "ноль копеек";
         } else {
-            return " копейка";
+            if (num%10 == 0 || num % 10 > 4 || (num%100 < 20 && num%100 > 9)) {
+                return " копеек";
+            } else if (num % 10 != 1) {
+                return " копейки";
+            } else {
+                return " копейка";
+            }
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
