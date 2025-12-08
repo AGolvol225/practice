@@ -33,7 +33,7 @@ public class BigDecimalProj {
         StringBuilder str = new StringBuilder();
 
         str.append(hundreds[hundred]).append(" ");
-        if (thousands == 1 && (t%10 == 1 || t%10 == 2)){
+        if (thousands == 1 && (t%10 == 1 || t%10 == 2) && t > 19){
             str.append(dozens[t / 10]).append(" ");
             str.append(units12[t % 10]).append(" ");
         } else {
@@ -63,12 +63,23 @@ public class BigDecimalProj {
             n = (int) (num % 1000);
             num /= 1000;
             strB.append(numStr(n, i)).append(" ");
-            if (n%10 == 0 || n%10 > 4 || (n%100 < 20 && n%100 > 9)){
+            int t = n%10;
+            if (n%100 < 20 && n%100 > 9){
                 strB.append(thousands_056789[i]).append(" ");
-            } else if (n%10 != 1) {
-                strB.append(thousands_234[i]).append(" ");
             } else {
-                strB.append(thousands_1[i]).append(" ");
+                switch (t) {
+                    case 1:
+                        strB.append(thousands_1[i]).append(" ");
+                        break;
+                    case 2:
+                    case 3:
+                    case 4:
+                        strB.append(thousands_234[i]).append(" ");
+                        break;
+                    default:
+                        strB.append(thousands_056789[i]).append(" ");
+
+                }
             }
             str = strB.toString().trim();
             threeNum.add(0, str);
@@ -78,26 +89,29 @@ public class BigDecimalProj {
     }
 
     private static String rubles(long num){
-        if (num%10 == 0 || num%10 > 4 || (num%100 < 20 && num%100 > 9)){
-            return " рублей ";
-        } else if (num%10 != 1) {
-            return " рубля ";
-        } else {
-            return " рубль ";
-        }
+        int t = (int) num%10;
+        return switch (t) {
+            case 1 -> " рубль ";
+            case 2, 3, 4 -> " рубля ";
+            default -> " рублей ";
+        };
     }
 
     private static String kopecks(short num){
-        if (num == 0) {
-            return "ноль копеек";
-        } else {
-            if (num%10 == 0 || num % 10 > 4 || (num%100 < 20 && num%100 > 9)) {
-                return " копеек";
-            } else if (num % 10 != 1) {
-                return " копейки";
-            } else {
+        int t = (int) num%10;
+        switch (t){
+            case 1:
                 return " копейка";
-            }
+            case 2:
+            case 3:
+            case 4:
+                return " копейки";
+            default:
+                if (t == 0 && num < 9){
+                    return "ноль копеек";
+                } else {
+                    return " копеек";
+                }
         }
     }
 }
