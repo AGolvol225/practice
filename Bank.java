@@ -3,8 +3,8 @@ import java.util.Scanner;
 public class Bank {
     public static void main(String[] args){
         Scanner scanner = new Scanner(System.in);
-        String num = new String();
-        String name = new String();
+        String num;
+        String name;
         double bal = -1;
 
         System.out.print("Введите номер карты: ");
@@ -22,15 +22,12 @@ public class Bank {
         }
         BankAccount account = new BankAccount(num, name, bal);
         account.operations();
-
-        account.deposit(999);
-        System.out.println(account.getBalance());
     }
 }
 
 class BankAccount{
-    private String accountNumber = new String();
-    private String ownerName;
+    private final String accountNumber;
+    private final String ownerName;
     private double balance;
 
     BankAccount(String accountNum, String name, double bal){
@@ -41,13 +38,13 @@ class BankAccount{
 
     void operations(){
         Scanner scanner = new Scanner(System.in);
-        String operstion = new String();
+        String operation = "";
         int amount;
 
-        System.out.println("Возможные операции:\n1) Внести\n2) Вывести\n3) Посмотерть баланс\n4) Выход");
-        while (operstion != "Выход" || operstion != "4"){
-            operstion = scanner.nextLine();
-            switch (operstion){
+        System.out.println("Возможные операции:\n1) Внести\n2) Вывести\n3) Посмотерть баланс\n4) Начислени процентов 10%\n5) Выход");
+        do {
+            operation = scanner.nextLine();
+            switch (operation){
                 case "1":
                 case "Внести":
                     System.out.print("Введите сумму для зачисления на счет: ");
@@ -64,10 +61,18 @@ class BankAccount{
                 case "Посмотерть баланс":
                     System.out.println(getBalance() + "р.");
                     break;
+                case "4":
+                case "Начислени процентов 10%":
+                    System.out.println("При ставке начисления в размере 10% сумма будет равна " + percentages(balance));
+                    break;
+                case "5":
+                case "Выход":
+                    System.out.println("Операция по выходу успешно завершена.");
+                    break;
                 default:
                     System.out.println("Введите число или название операции.");
             }
-        }
+        } while (!operation.equals("Выход") && !operation.equals("5"));
     }
 
     void deposit(int amount){
@@ -90,5 +95,10 @@ class BankAccount{
 
     double getBalance() {
         return balance;
+    }
+
+    double percentages(double amount){
+        amount += amount * 0.1;
+        return amount;
     }
 }
